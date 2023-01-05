@@ -72,92 +72,7 @@
 #include "postprocessing/filter.h"
 #include "stdio.h"
 
-#include <opencv2/opencv.hpp>
-// #include "PFMReadWrit
-
 using namespace optix;
-
-bool savePFM(const cv::Mat image, const std::string filePath)
-{
-	//Open the file as binary!
-	std::ofstream imageFile(filePath.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
-
-	if(imageFile)
-	{
-		int width(image.cols), height(image.rows);
-		int numberOfComponents(image.channels());
-
-		//Write the type of the PFM file and ends by a line return
-		char type[3];
-		type[0] = 'P';
-		type[2] = 0x0a;
-
-		if(numberOfComponents == 3)
-		{
-			type[1] = 'F';
-		}
-		else if(numberOfComponents == 1)
-		{
-			type[1] = 'f';
-		}
-
-		imageFile << type[0] << type[1] << type[2];
-
-		//Write the width and height and ends by a line return
-		imageFile << width << " " << height << type[2];
-
-		//Assumes little endian storage and ends with a line return 0x0a
-		//Stores the type
-		char byteOrder[10];
-		byteOrder[0] = '-'; byteOrder[1] = '1'; byteOrder[2] = '.'; byteOrder[3] = '0';
-		byteOrder[4] = '0'; byteOrder[5] = '0'; byteOrder[6] = '0'; byteOrder[7] = '0';
-		byteOrder[8] = '0'; byteOrder[9] = 0x0a;
-
-		for(int i = 0 ; i<10 ; ++i)
-		{
-			imageFile << byteOrder[i];
-		}
-
-		//Store the floating points RGB color upside down, left to right
-		float* buffer = new float[numberOfComponents];
-
-		for(int i = 0 ; i<height ; ++i)
-		{
-			for(int j = 0 ; j<width ; ++j)
-			{
-				if(numberOfComponents == 1)
-				{
-					buffer[0] = image.at<float>(height-1-i,j); // ?????????????????????????????
-				}
-				else
-				{
-					cv::Vec3f color = image.at<cv::Vec3f>(height-1-i,j); // ?????????????????????????????
-
-					//OpenCV stores as BGR
-                    //junpeng: switch back to rgb
-					buffer[0] = color.val[0];
-					buffer[1] = color.val[1];
-					buffer[2] = color.val[2];
-				}
-
-				//Write the values
-				imageFile.write((char *) buffer, numberOfComponents*sizeof(float));
-
-			}
-		}
-
-		delete[] buffer;
-
-		imageFile.close();
-	}
-	else
-	{
-		std::cerr << "Could not open the file : " << filePath << std::endl;
-		return false;
-	}
-
-	return true;
-}
 
 long unsigned vertexCount(const std::vector<shape_t>& shapes)
 {
@@ -233,48 +148,26 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
     }
 
     if(isHdr){
-        //FILE* imgOut = fopen(fileName, "w");
-
-        // if(imgOut == NULL){
-        //     std::cout<<"Wrong: can not open the output file!"<<std::endl;
-        //     return false;
-        // }
+        FILE* imgOut = fopen(fileName, "w");
+        if(imgOut == NULL){
+            std::cout<<"Wrong: can not open the output file!"<<std::endl;
+            return false;
+        }
         float* image = new float[width * height * 3];
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 for(int ch = 0; ch < 3; ch ++){
-                    image[3*(i * width + j) + ch] = imgData[3*( (height-1-i) * width + j) + ch]; // ????????????????????????????????????
+                    image[3*(i * width + j) + ch] = imgData[3*( (height-1-i) * width + j) + ch];
                 }
             }
         }
-        // RGBE_WriteHeader(imgOut, width, height, NULL);
-        // RGBE_WritePixels(imgOut, image, width * height);
-        // fclose(imgOut);
-
-
-        // added by Haoang
-        cv::Mat rgbImg;
-        rgbImg.create(height, width, CV_32FC3);
-
-        int sizeRgb = width * height * 3 * sizeof(float);
-        // version 1 -- flip
-        //memcpy(rgbImg.data, imgData, sizeRgb); // ??????????? or "image"
-
-        // version 2
-        memcpy(rgbImg.data, image, sizeRgb); // ??????????? or "image"
-
-        std::string filePath(fileName);
-        filePath.erase(filePath.end() - 4, filePath.end());
-        filePath.append("pfm");
-
-        savePFM(rgbImg, filePath);
-
-
+        RGBE_WriteHeader(imgOut, width, height, NULL);
+        RGBE_WritePixels(imgOut, image, width * height);
+        fclose(imgOut);
         delete [] image;
     }
     else{
-        // cv::Mat image(height, width, CV_8UC3);
-        cv::Mat image(height, width, CV_32FC3);
+        cv::Mat image(height, width, CV_8UC3);
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 int ind = 3 * ( (height - 1 -i) * width + j);
@@ -289,19 +182,12 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
                 r = clip(r, 0.0f, 1.0f);
                 g = clip(g, 0.0f, 1.0f);
                 b = clip(b, 0.0f, 1.0f);
-                // image.at<cv::Vec3b>(i, j)[0] = (unsigned char)(b * 255);
-                // image.at<cv::Vec3b>(i, j)[1] = (unsigned char)(g * 255);
-                // image.at<cv::Vec3b>(i, j)[2] = (unsigned char)(r * 255);
-                image.at<cv::Vec3f>(i, j)[0] = b;
-                image.at<cv::Vec3f>(i, j)[1] = g;
-                image.at<cv::Vec3f>(i, j)[2] = r;
+                image.at<cv::Vec3b>(i, j)[0] = (unsigned char)(b * 255);
+                image.at<cv::Vec3b>(i, j)[1] = (unsigned char)(g * 255);
+                image.at<cv::Vec3b>(i, j)[2] = (unsigned char)(r * 255);
             }
         } 
-        // cv::imwrite(fileName, image);
-        std::string filePath(fileName);
-        filePath.erase(filePath.end() - 4, filePath.end());
-        filePath.append(".pfm");
-        savePFM(image,filePath);
+        cv::imwrite(fileName, image);
     }
 
     return true;

@@ -1,3 +1,14 @@
+```
+./optixRenderer -f ../../src/optixRenderer/cbox/bunny.xml -o ./test1.jpg -m 0 --gpuIds 0 1 2
+
+./optixRenderer -f ../../../assets/ttt/tt/scenes/xml/scene0001_00/main_modified_xizhan.xml -c scene0001_00.txt -o ./outputs/test.jpg -m 0 --gpuIds 3 4 5 --forceOutput --camStart 6 --camEnd 100
+
+./optixRenderer -f /media/gpuadmin/4TB/haoang/junpeng/assets/ttt/tt/scenes/xml/scene0016_02/main.xml -c /home/senorgroup_hty/haoang/junpeng/ws_optix/haoanglookat/output_lookats_ups_origs_final3/scene0016_02.txt -o ./test.jpg -m 1 --gpuIds 0 1 2 3 --forceOutput --camStart 6 --camEnd 7
+
+/home/senorgroup_hty/haoang/synpts-mode
+
+```
+
 # OptixRenderer
 An optix GPU based path tracer. This is the renderer built and used in the following 2 projects:
 * Li, Z., Shafiei, M., Ramamoorthi, R., Sunkavalli, K., & Chandraker, M. (2020). Inverse rendering for complex indoor scenes: Shape, spatially-varying lighting and svbrdf from a single image. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 2475-2484).
