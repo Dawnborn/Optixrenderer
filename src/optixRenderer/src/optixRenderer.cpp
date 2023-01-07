@@ -215,19 +215,26 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
         isHdr = false;
     
     if(mode == 5){
-        std::ofstream depthOut(fileName, std::ios::out|std::ios::binary);
-        depthOut.write((char*)&height, sizeof(int) );
-        depthOut.write((char*)&width, sizeof(int) );
+        // std::ofstream depthOut(fileName, std::ios::out|std::ios::binary);
+        // depthOut.write((char*)&height, sizeof(int) );
+        // depthOut.write((char*)&width, sizeof(int) );
 
-        float* image = new float[width * height];
+        unsigned short* image = new unsigned short[width * height];
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
-                image[i*width + j] = imgData[3 * ( (height-1-i) * width +j ) ];
+                image[i*width + j] = (unsigned short)(5000*imgData[3 * ( (height-1-i) * width +j ) ]);
             }
         }
-        depthOut.write( (char*)image, sizeof(float) * width * height);
-        depthOut.close();
-        delete [] image;
+        // depthOut.write( (char*)image, sizeof(float) * width * height);
+        // depthOut.close();
+        // delete [] image;
+        cv::Mat depthImg = cv::Mat(height, width, CV_16UC1, image);
+ 
+        std::string filePath(fileName);
+        filePath.erase(filePath.end() - 4, filePath.end());
+        filePath.append("png");
+
+        cv::imwrite(fileName,depthImg);
 
         return true;
     }
@@ -323,10 +330,10 @@ std::string generateOutputFilename(std::string fileName, int mode, bool isHdr, i
     
     if(mode == 0){
         if(isHdr){
-            if(suffix != std::string("rgbe") ){
-                std::cout<<"Warning: we only support rgbe image for hdr"<<std::endl;
+            if(suffix != std::string("pfm") ){
+                std::cout<<"Warning: we only support pfm image for hdr"<<std::endl;
             }
-            suffix = std::string("rgbe");
+            suffix = std::string("pfm");
         }
         else{
             if(suffix != std::string("bmp") && suffix != std::string("png") 
@@ -338,10 +345,10 @@ std::string generateOutputFilename(std::string fileName, int mode, bool isHdr, i
         }
     }
     else if(mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode == 6){
-        suffix = std::string("png");
+        suffix = std::string("pfm");
     }
     else if(mode == 5){
-        suffix = std::string("dat");
+        suffix = std::string("png");
     }
 
     std::string outputFileName;
