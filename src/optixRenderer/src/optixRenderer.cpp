@@ -280,8 +280,7 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
         delete [] image;
     }
     else{
-        // cv::Mat image(height, width, CV_8UC3);
-        cv::Mat image(height, width, CV_32FC3);
+        cv::Mat image(height, width, CV_8UC3);
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 int ind = 3 * ( (height - 1 -i) * width + j);
@@ -296,19 +295,12 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
                 r = clip(r, 0.0f, 1.0f);
                 g = clip(g, 0.0f, 1.0f);
                 b = clip(b, 0.0f, 1.0f);
-                // image.at<cv::Vec3b>(i, j)[0] = (unsigned char)(b * 255);
-                // image.at<cv::Vec3b>(i, j)[1] = (unsigned char)(g * 255);
-                // image.at<cv::Vec3b>(i, j)[2] = (unsigned char)(r * 255);
-                image.at<cv::Vec3f>(i, j)[0] = b;
-                image.at<cv::Vec3f>(i, j)[1] = g;
-                image.at<cv::Vec3f>(i, j)[2] = r;
+                image.at<cv::Vec3b>(i, j)[0] = (unsigned char)(b * 255);
+                image.at<cv::Vec3b>(i, j)[1] = (unsigned char)(g * 255);
+                image.at<cv::Vec3b>(i, j)[2] = (unsigned char)(r * 255);
             }
         } 
-        // cv::imwrite(fileName, image);
-        std::string filePath(fileName);
-        filePath.erase(filePath.end() - 4, filePath.end());
-        filePath.append(".pfm");
-        savePFM(image,filePath);
+        cv::imwrite(fileName, image);
     }
 
     return true;

@@ -7,6 +7,8 @@
 
 /home/senorgroup_hty/haoang/synpts-mode
 
+mkdir pfm basecolor normal roughness depth mask metallic
+
 ```
 
 # OptixRenderer
