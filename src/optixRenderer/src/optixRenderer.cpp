@@ -211,8 +211,8 @@ float clip(float a, float min, float max){
 
 bool writeBufferToFile(const char* fileName, float* imgData, int width, int height, bool isHdr = false, int mode = 0)
 {   
-    if(mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode  == 6)
-        isHdr = false;
+    // if(mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode  == 6)
+    //     isHdr = false;
     
     if(mode == 5){
         // std::ofstream depthOut(fileName, std::ios::out|std::ios::binary);
@@ -272,10 +272,9 @@ bool writeBufferToFile(const char* fileName, float* imgData, int width, int heig
 
         std::string filePath(fileName);
         filePath.erase(filePath.end() - 4, filePath.end());
-        filePath.append("pfm");
+        filePath.append(".pfm");
 
         savePFM(rgbImg, filePath);
-
 
         delete [] image;
     }
@@ -320,7 +319,7 @@ std::string generateOutputFilename(std::string fileName, int mode, bool isHdr, i
         suffix = fileName.substr(pos+1, fileName.length() );
     }
     
-    if(mode == 0){
+    if(mode == 0 || mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode == 6){
         if(isHdr){
             if(suffix != std::string("pfm") ){
                 std::cout<<"Warning: we only support pfm image for hdr"<<std::endl;
@@ -335,9 +334,6 @@ std::string generateOutputFilename(std::string fileName, int mode, bool isHdr, i
                 suffix = std::string("png");
             }
         }
-    }
-    else if(mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode == 6){
-        suffix = std::string("pfm");
     }
     else if(mode == 5){
         suffix = std::string("png");
