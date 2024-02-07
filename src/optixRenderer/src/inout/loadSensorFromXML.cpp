@@ -15,6 +15,9 @@ bool loadSensorFromXML(CameraInput& Camera, TiXmlNode* module)
             else if(seAttri -> Value() == std::string("hemisphere") ){
                 Camera.cameraType = std::string("hemisphere");
             }
+            else if(seAttri -> Value() == std::string("envmap2") ){
+                Camera.cameraType = std::string("envmap2");
+            }
             else{
                 std::cout<<"Wrong: unrecognizable type of sensor "<<seAttri -> Value()<<" !"<<std::endl;
                 return false;

@@ -92,15 +92,29 @@ RT_PROGRAM void pinhole_camera()
             float theta;
             if(cameraMode == 1){
                 theta = 0.5f * (-d.y + 1.0f) * M_PIf;
-            }
-            else if(cameraMode == 2){
-                theta = 0.25f * (-d.y + 1.0f) * M_PIf;
-            }
-            ray_direction = normalize(
+                ray_direction = normalize(
                     sinf(theta) * cosf(phi) * axisX 
                     + sinf(theta) * sinf(phi) * axisY 
                     + cosf(theta) * axisZ
                     );
+            }
+            else if(cameraMode == 2){
+                theta = 0.25f * (-d.y + 1.0f) * M_PIf;
+                ray_direction = normalize(
+                    sinf(theta) * cosf(phi) * axisX 
+                    + sinf(theta) * sinf(phi) * axisY 
+                    + cosf(theta) * axisZ
+                    );
+            }
+            else if(cameraMode == 3){
+                phi = d.x * M_PIf;
+                theta = 0.5f * (-d.y + 1.0f) * M_PIf;
+                ray_direction = normalize(
+                    sinf(theta) * cosf(phi) * axisZ 
+                    + sinf(theta) * sinf(phi) * axisX 
+                    + cosf(theta) * axisY
+                    );
+            }
         }
 
         // Initialze per-ray data

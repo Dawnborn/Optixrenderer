@@ -412,6 +412,7 @@ int main( int argc, char** argv )
 
     int camStart = 0;
     int camEnd = -1;
+    int camInterval = 1;
 
     Context context = 0;
 
@@ -497,6 +498,13 @@ int main( int argc, char** argv )
                 exit(1);
             }
             camEnd = atoi(argv[++i] );
+        }
+        else if(std::string(argv[i] ) == std::string("--camInterval") ){
+            if(i == argc - 1){
+                std::cout<<"Missing input variable"<<std::endl;
+                exit(1);
+            }
+            camInterval = atoi(argv[++i] );
         }
         else if(std::string(argv[i] ) == std::string("--forceOutput") ){
             isForceOutput = true;   
@@ -650,7 +658,7 @@ int main( int argc, char** argv )
         camEp = std::max(std::min(camEnd, camNum), 0);
     }
     
-    for(int i = camSp; i < camEp; i++){ 
+    for(int i = camSp; i < camEp; i+=camInterval){ 
         std::string outputFileNameNew = generateOutputFilename(outputFileName, mode,
                 cameraInput.isHdr, i, camNum);
 

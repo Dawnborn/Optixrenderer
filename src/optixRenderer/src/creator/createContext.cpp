@@ -62,6 +62,9 @@ unsigned createContext(
     else if(cameraType == std::string("hemisphere") ){
         context["cameraMode"] -> setInt(2);
     }
+    else if(cameraType == std::string("envmap2") ){
+        context["cameraMode"] -> setInt(3);
+    }
     else{ 
         std::cout<<"Wrong: unrecognizable camera type!"<<std::endl;
         exit(1);
